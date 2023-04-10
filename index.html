@@ -1,0 +1,63 @@
+<!-- ADD A BUTTON THAT PRODUCES A NEW/DIFFERENT CAT GIF BUT WITHOUT REFRESHING THE PAGE.
+
+PREVENT DEFAULT ON BUTTON
+
+IF STATEMENT CHECKING PREVIOUS/CURRENT URL AGAINST NEXT
+
+DEFER SCRIPT
+
+SET FETCH IN A FUNCTION AND CALL ON CLICK AND ONCE ON LOAD SO WE HAVE A GIF STRAIGHT AWAY-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GIPHY, CATS AND API PRACTISE</title>
+  </head>
+  <body>
+    <img src="" alt="" />
+    <button>Search for GIFs</button>
+    <input type="text" placeholder="Search GIFs from GIPHY" />
+    <script defer>
+      const img = document.querySelector("img");
+      const btn = document.querySelector("button");
+      const input = document.querySelector("input");
+
+      btn.addEventListener("click", (e) => {
+        getImage(`${input.value}` || "cats");
+      });
+
+      function getImage(search) {
+        fetch(
+          `https://api.giphy.com/v1/gifs/translate?api_key=xnc0393d4xFHgHGUO33J14DJCuZm3OGm&s=${search}`,
+          { mode: "cors" }
+        )
+          .then(function (response) {
+            return response.json();
+          })
+          /* FETCH is a HTTP request, promise. alot cleaner than new XMLHttpRequest() 
+               takes URL as a parameter and then js object here is because browsers are v. strict about accessing data and handling request to and from outside/3rd party sources
+               because FETCH is a promise, can call .then() and even .catch()*/
+          .then(function (response) {
+            //response is now a js object that can be read thanks to .json() being called on the first promise fulfillment.
+            //because its an object we can search through its properties to find what data we need, in this case a url, and then set that to img.src so it can be displayed.
+            img.src = response.data.images.original.url;
+          })
+          /* First .then returns another promises */
+          .catch(function (err) {
+            let message = "Try searching for something else";
+            console.log(err);
+            alert(message);
+          });
+      }
+      /*   const getCurrentImageSource = new Promise((resolve, reject) => {
+            resolve(img.src)
+        }) */ //not used
+
+      /* This is sync, img doesn't have a source yet, needs to wait for one. So make a promise */
+      getImage("cats");
+    </script>
+  </body>
+</html>
